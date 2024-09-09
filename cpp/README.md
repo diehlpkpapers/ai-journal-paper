@@ -1,5 +1,7 @@
 ## Conjugate gradient solver
 
+The clang compielr showed some errors messages which could be fixed bu sing the C++ 14 standard.
+
 ´```bash
 [ 83%] Building CXX object cpp/CMakeFiles/cg_cpp.dir/cg.cpp.o
 /Users/diehlpk/git/ai-journal-paper/cpp/cg.cpp:8:47: error: a space is required between consecutive right angle brackets (use '> >')
