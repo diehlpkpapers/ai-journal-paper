@@ -1,5 +1,5 @@
 % Define the linear equation system
-A = [4 1 0; 1 5 2; 0 2 3];  % matrix
+A = [4 -1 0; -1 4 -1; 0 -1 4];  % matrix
 b = [1; 2; 3];  % right-hand side vector
 
 % Define the tolerance and maximum number of iterations
