@@ -1,0 +1,3 @@
+enable_language(CUDA)
+add_executable(integration_cuda_generic integration_cuda_generic.cu)
+add_executable(integration_cuda_ampere integration_cuda_amepere.cu)
