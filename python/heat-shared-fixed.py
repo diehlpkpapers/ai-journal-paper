@@ -92,5 +92,5 @@ if __name__ == '__main__':
     plt.title('Solution of the 1D Heat Equation')
     plt.legend()
     plt.grid()
-    plt.show()
+    plt.savefig("python-heat-solution.pdf")
 
