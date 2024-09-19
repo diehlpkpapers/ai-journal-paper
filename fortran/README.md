@@ -37,3 +37,28 @@ make[1]: *** [fortran/CMakeFiles/cg.dir/all] Error 2
 make: *** [all] Error 2
 ```
 
+## Parallel heat eqution
+
+### Parallel using OpenMP
+
+````bash
+[ 41%] Building Fortran object fortran/CMakeFiles/heat_shared.dir/heat-shared.f90.o
+/vast/home/diehlpk/ai-journal-paper/fortran/heat-shared.f90:16:6:
+
+   DO i = 1, NX
+      1
+Error: Symbol ‘i’ at (1) has no IMPLICIT type
+/vast/home/diehlpk/ai-journal-paper/fortran/heat-shared.f90:21:6:
+
+   DO j = 1, NT
+      1
+Error: Symbol ‘j’ at (1) has no IMPLICIT type
+/vast/home/diehlpk/ai-journal-paper/fortran/heat-shared.f90:17:19:
+
+     u(i) = SIN(M_PI * (i - 1) * DX)  ! Initial condition
+                   1
+Error: Symbol ‘m_pi’ at (1) has no IMPLICIT type
+make[2]: *** [fortran/CMakeFiles/heat_shared.dir/build.make:75: fortran/CMakeFiles/heat_shared.dir/heat-shared.f90.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:176: fortran/CMakeFiles/heat_shared.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2
+```

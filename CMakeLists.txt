@@ -8,6 +8,8 @@ enable_language(Fortran)
 
 set(WITH_CUDA OFF CACHE BOOL "Build CUDA code")
 
+find_package(OpenMP REQUIRED)
+
 set (CMAKE_EXE_LINKER_FLAGS "-lstdc++")
 
 
