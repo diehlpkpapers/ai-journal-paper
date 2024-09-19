@@ -9,18 +9,19 @@ PROGRAM heat_equation_1d_parallel
   REAL, PARAMETER :: ALPHA = 0.1  ! Thermal diffusivity
   REAL, PARAMETER :: DX = LX / (NX - 1)  ! Grid spacing in x-direction
   REAL, PARAMETER :: DT = T_FINAL / NT  ! Time step
-
+  REAL, Parameter :: M_PI =4.D0*DATAN(1.D0)
+  INTEGER :: i,j 
   REAL, DIMENSION(NX) :: u, u_new
 
   ! Initialize the grid
-  DO i = 1, NX
+  DO i = 1,NX
     u(i) = SIN(M_PI * (i - 1) * DX)  ! Initial condition
   END DO
 
   ! Time-stepping loop
-  DO j = 1, NT
+  DO j = 1,NT
     !$OMP PARALLEL DO PRIVATE(i)
-    DO i = 2, NX - 1
+    DO i = 2,NX - 1
       u_new(i) = u(i) + ALPHA * DT / DX / DX * (u(i + 1) - 2 * u(i) + u(i - 1))
     END DO
     !$OMP END PARALLEL DO
