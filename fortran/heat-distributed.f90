@@ -17,6 +17,8 @@ PROGRAM heat_equation
   INTEGER :: ierr
   INTEGER :: num_procs, rank
 
+  REAL, Parameter :: M_PI =4.D0*DATAN(1.D0)
+
   CALL MPI_INIT(ierr)
   CALL MPI_COMM_SIZE(MPI_COMM_WORLD, num_procs, ierr)
   CALL MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierr)
