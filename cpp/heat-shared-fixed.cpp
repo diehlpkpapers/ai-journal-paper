@@ -5,7 +5,7 @@
 #define NX 100  // Number of grid points in x-direction
 #define NT 1  // Number of time steps
 #define LX 1.0  // Length of the domain in x-direction
-#define T_FINAL 1.0  // Final time
+#define T_FINAL 0.1  // Final time
 #define ALPHA 0.1  // Thermal diffusivity
 //#define DX (LX / (NX - 1))  // Grid spacing in x-direction
 //#define DT (T_FINAL / NT)  // Time step
@@ -42,7 +42,7 @@ void heat_equation_1d_parallel() {
 
   // Output the final solution
   for (i = 0; i < NX; i++) {
-    std::cout << "u[" << i << "] = " << u[i] << std::endl;
+    std::cout  << u[i] << std::endl;
   }
 
   delete[] u;
