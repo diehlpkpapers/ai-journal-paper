@@ -6,3 +6,9 @@ add_executable(cg_cpp cg.cpp)
 
 add_executable(heat_shared_cpp heat-shared-fixed.cpp)
 target_link_libraries(heat_shared_cpp PRIVATE OpenMP::OpenMP_CXX)
+
+IF(WITH_MPI)
+  add_executable(heat_distributed_cpp heat-distributed.cpp)
+  target_include_directories(heat_distributed_cpp PRIVATE ${MPI_INCLUDE_PATH})
+  target_link_libraries(heat_distributed_cpp ${MPI_CXX_LIBRARIES})
+ENDIF()
