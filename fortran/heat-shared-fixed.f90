@@ -3,9 +3,9 @@ PROGRAM heat_equation_1d_parallel
   IMPLICIT NONE
 
   INTEGER, PARAMETER :: NX = 100  ! Number of grid points in x-direction
-  INTEGER, PARAMETER :: NT = 100  ! Number of time steps
+  INTEGER, PARAMETER :: NT = 1000  ! Number of time steps
   REAL, PARAMETER :: LX = 1.0  ! Length of the domain in x-direction
-  REAL, PARAMETER :: T_FINAL = 1.0  ! Final time
+  REAL, PARAMETER :: T_FINAL = 0.1  ! Final time
   REAL, PARAMETER :: ALPHA = 0.1  ! Thermal diffusivity
   REAL, PARAMETER :: DX = LX / (NX - 1)  ! Grid spacing in x-direction
   REAL, PARAMETER :: DT = T_FINAL / NT  ! Time step
@@ -32,7 +32,7 @@ PROGRAM heat_equation_1d_parallel
 
   ! Output the final solution
   DO i = 1, NX
-    WRITE (*,*) 'u(', i, ') = ', u(i)
+    WRITE (*,*) u(i)
   END DO
 
 END PROGRAM heat_equation_1d_parallel
