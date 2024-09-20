@@ -9,7 +9,9 @@ enable_language(Fortran)
 set(WITH_CUDA OFF CACHE BOOL "Build CUDA examples")
 set(WITH_MPI OFF CACHE BOOL "Build MPI examples")
 
-find_package(OpenMP REQUIRED)
+if(WITH_OPENMP)
+    find_package(OpenMP REQUIRED)
+endif()
 
 IF(WITH_MPI)
   find_package(MPI COMPONENTS Fortran CXX REQUIRED)
