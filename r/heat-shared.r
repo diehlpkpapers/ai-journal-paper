@@ -42,6 +42,8 @@ dx <- L / (nx - 1)
 t_end <- 0.1
 alpha <- 0.1
 num_cores <- 4
+dt <- 0.001  # Set a small time step size, was not defined in the ai-generated code and added manually 
+
 
 # Set up the initial condition
 x <- seq(0, L, by = dx)
