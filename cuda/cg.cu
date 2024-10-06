@@ -3,140 +3,158 @@
 #include <iostream>
 #include <cmath>
 
-// Matrix-vector product kernel
-__global__ void matVecKernel(float *A, float *x, float *b, int N) {
+// Kernel function to perform matrix-vector multiplication
+__global__ void matVecMulKernel(int n, float *A, float *x, float *b) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < N) {
-        float sum = 0.0f;
-        for (int i = 0; i < N; i++) {
-            sum += A[idx * N + i] * x[i];
+    if (idx < n) {
+        float sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += A[idx * n + i] * x[i];
         }
         b[idx] = sum;
     }
 }
 
-// Conjugate Gradient solver kernel
-__global__ void cgKernel(float *A, float *b, float *x, int N, int maxIter) {
+// Kernel function to perform dot product
+__global__ void dotProductKernel(int n, float *a, float *b, float *result) {
+    __shared__ float temp;
+    temp = 0;
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < N) {
-        float r[N]; // residual
-        float p[N]; // search direction
-        float Ap[N]; // matrix-vector product
-
-        // Initialize residual and search direction
-        r[idx] = b[idx];
-        p[idx] = r[idx];
-
-        for (int iter = 0; iter < maxIter; iter++) {
-            // Matrix-vector product
-            matVecKernel<<<N / 256, 256>>>(A, p, Ap, N);
-
-            // Compute alpha
-            float alpha = 0.0f;
-            for (int i = 0; i < N; i++) {
-                alpha += r[i] * p[i];
-            }
-            alpha /= dotProduct(p, Ap, N);
-
-            // Update x and residual
-            x[idx] += alpha * p[idx];
-            r[idx] -= alpha * Ap[idx];
-
-            // Compute beta
-            float beta = 0.0f;
-            for (int i = 0; i < N; i++) {
-                beta += r[i] * r[i];
-            }
-            beta /= dotProduct(p, Ap, N);
-
-            // Update search direction
-            p[idx] = r[idx] + beta * p[idx];
-        }
+    if (idx < n) {
+        temp += a[idx] * b[idx];
+    }
+    __syncthreads();
+    if (threadIdx.x == 0) {
+        atomicAdd(result, temp);
     }
 }
 
-// Dot product kernel
-__global__ void dotProductKernel(float *a, float *b, float *result, int N) {
+// Kernel function to perform vector addition
+__global__ void vecAddKernel(int n, float *a, float *b, float *result) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < N) {
-        atomicAdd(result, a[idx] * b[idx]);
+    if (idx < n) {
+        result[idx] = a[idx] + b[idx];
     }
 }
 
-// Host function to solve the linear system
-void conjugateGradient(float *A, float *b, float *x, int N, int maxIter) {
-    // Allocate device memory
-    float *d_A, *d_b, *d_x;
-    cudaMalloc((void **)&d_A, N * N * sizeof(float));
-    cudaMalloc((void **)&d_b, N * sizeof(float));
-    cudaMalloc((void **)&d_x, N * sizeof(float));
-
-    // Copy host data to device
-    cudaMemcpy(d_A, A, N * N * sizeof(float), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_b, b, N * sizeof(float), cudaMemcpyHostToDevice);
-    cudaMemset(d_x, 0, N * sizeof(float));
-
-    // Launch CG kernel
-    cgKernel<<<N / 256, 256>>>(d_A, d_b, d_x, N, maxIter);
-
-    // Copy result back to host
-    cudaMemcpy(x, d_x, N * sizeof(float), cudaMemcpyDeviceToHost);
-
-    // Free device memory
-    cudaFree(d_A);
-    cudaFree(d_b);
-    cudaFree(d_x);
+// Kernel function to perform scalar multiplication
+__global__ void scalarMultKernel(int n, float alpha, float *x) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) {
+        x[idx] *= alpha;
+    }
 }
 
-// Validate the result
-void validate(float *A, float *b, float *x, int N) {
-    float residual[N];
-    for (int i = 0; i < N; i++) {
-        residual[i] = 0.0f;
-        for (int j = 0; j < N; j++) {
-            residual[i] += A[i * N + j] * x[j];
-        }
-        residual[i] -= b[i];
+// Conjugate Gradient solver
+void conjugateGradient(int n, float *A, float *b, float *x, int maxIter, float tol) {
+    float *r, *p, *Ap;
+    cudaMalloc((void **)&r, n * sizeof(float));
+    cudaMalloc((void **)&p, n * sizeof(float));
+    cudaMalloc((void **)&Ap, n * sizeof(float));
+
+    // Initialize r and p
+    cudaMemcpy(r, b, n * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(p, b, n * sizeof(float), cudaMemcpyHostToDevice);
+
+    float rho, rhoOld, alpha, beta;
+    int iter = 0;
+
+    while (iter < maxIter) {
+        // Compute Ap
+        matVecMulKernel<<<(n + 255) / 256, 256>>>(n, A, p, Ap);
+
+        // Compute rho
+        float rhoResult;
+        dotProductKernel<<<(n + 255) / 256, 256>>>(n, r, r, &rhoResult);
+        cudaMemcpy(&rho, &rhoResult, sizeof(float), cudaMemcpyDeviceToHost);
+
+        // Check for convergence
+        if (sqrt(rho) < tol) break;
+
+        // Compute alpha
+        float alphaResult;
+        dotProductKernel<<<(n + 255) / 256, 256>>>(n, p, Ap, &alphaResult);
+        cudaMemcpy(&alpha, &alphaResult, sizeof(float), cudaMemcpyDeviceToHost);
+        alpha = rho / alpha;
+
+        // Update x and r
+        scalarMultKernel<<<(n + 255) / 256, 256>>>(n, alpha, p);
+        vecAddKernel<<<(n + 255) / 256, 256>>>(n, x, p, x);
+        vecAddKernel<<<(n + 255) / 256, 256>>>(n, r, Ap, r);
+
+        // Update p
+        beta = rho / rhoOld;
+        scalarMultKernel<<<(n + 255) / 256, 256>>>(n, beta, p);
+        vecAddKernel<<<(n + 255) / 256, 256>>>(n, r, p, p);
+
+        rhoOld = rho;
+        iter++;
     }
 
-    float maxResidual = 0.0f;
-    for (int i = 0; i < N; i++) {
-        maxResidual = fmaxf(maxResidual, fabsf(residual[i]));
-    }
-
-    std::cout << "Maximum residual: " << maxResidual << std::endl;
+    cudaFree(r);
+    cudaFree(p);
+    cudaFree(Ap);
 }
 
 int main() {
-    int N = 1024; // size of the linear system
-    int maxIter = 100; // maximum number of iterations
-
-    // Allocate host memory
+    int n = 1000; // size of the linear system
     float *A, *b, *x;
-    A = (float *)malloc(N * N * sizeof(float));
-    b = (float *)malloc(N * sizeof(float));
-    x = (float *)malloc(N * sizeof(float));
+    A = (float *)malloc(n * n * sizeof(float));
+    b = (float *)malloc(n * sizeof(float));
+    x = (float *)malloc(n * sizeof(float));
 
-    // Initialize matrix A and vector b
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            A[i * N + j] = (i == j) ? 2.0f : 1.0f;
+    // Initialize A and b
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            A[i * n + j] = (i == j) ? 2 : 1;
         }
-        b[i] = (i % 2 == 0) ? 1.0f : -1.0f;
+        b[i] = (i % 2 == 0) ? 1 : -1;
     }
 
-    // Initialize solution vector x
-    for (int i = 0; i < N; i++) {
-        x[i] = 0.0f;
+    // Initialize x to zero
+    for (int i = 0; i < n; i++) {
+        x[i] = 0;
     }
 
-    // Solve the linear system using Conjugate Gradient
-    conjugateGradient(A, b, x, N, maxIter);
+    float *d_A, *d_b, *d_x;
+    cudaMalloc((void **)&d_A, n * n * sizeof(float));
+    cudaMalloc((void **)&d_b, n * sizeof(float));
+    cudaMalloc((void **)&d_x, n * sizeof(float));
 
-    // Validate the result
-    validate(A, b, x, N);
+    cudaMemcpy(d_A, A, n * n * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_b, b, n * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_x, x, n * sizeof(float), cudaMemcpyHostToDevice);
 
-    // Free host memory
+    int maxIter = 1000;
+    float tol = 1e-6;
+
+    conjugateGradient(n, d_A, d_b, d_x, maxIter, tol);
+
+    cudaMemcpy(x, d_x, n * sizeof(float), cudaMemcpyDeviceToHost);
+
+    // Validate the solution
+    float residual = 0;
+    for (int i = 0; i < n; i++) {
+        float sum = 0;
+        for (int j = 0; j < n; j++) {
+            sum += A[i * n + j] * x[j];
+        }
+        residual += pow(sum - b[i], 2);
+    }
+    residual = sqrt(residual);
+
+    std::cout << "Residual: " << residual << std::endl;
+
+    if (residual < tol) {
+        std::cout << "Solution validated!" << std::endl;
+    } else {
+        std::cout << "Solution not validated!" << std::endl;
+    }
+
+    cudaFree(d_A);
+    cudaFree(d_b);
+    cudaFree(d_x);
+
     free(A);
     free(b);
     free(x);
