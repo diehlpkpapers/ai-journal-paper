@@ -22,6 +22,7 @@ set (CMAKE_EXE_LINKER_FLAGS "-lstdc++")
 
 add_subdirectory(fortran)
 add_subdirectory(cpp)
+add_subdirectory(translation)
 
 IF(WITH_CUDA)
  add_subdirectory(cuda)
