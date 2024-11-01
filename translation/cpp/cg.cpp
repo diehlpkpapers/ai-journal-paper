@@ -112,4 +112,6 @@ int main() {
     gaussian_elimination(A, b, x_ge);
 
     // Print the solution using the Gaussian elimination method
-    cout << "Solution
+    cout << "Solution";
+
+}
