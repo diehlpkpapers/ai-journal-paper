@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cmath>
-#include <omp.h>
 
 int main() {
     const int NX = 100;  // Number of grid points in x-direction
@@ -10,7 +9,7 @@ int main() {
     const double ALPHA = 0.1;  // Thermal diffusivity
     const double DX = LX / (NX - 1);  // Grid spacing in x-direction
     const double DT = T_FINAL / NT;  // Time step
-    const double M_PI = 4 * atan(1);
+    //const double M_PI = 4 * atan(1);
 
     double* u = new double[NX];
     double* u_new = new double[NX];
