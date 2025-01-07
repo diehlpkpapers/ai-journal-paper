@@ -12,6 +12,10 @@ set(WITH_MPI OFF CACHE BOOL "Build MPI examples")
 set(WITH_OPENMP OFF CACHE BOOL "Build examples with OpenMP")
 set(WITH_UNIT_TESTING OFF CACHE BOOL "Enable unit tests")
 
+
+
+set(CMAKE_CXX_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
+
 if(WITH_UNIT_TESTING)
     find_package(GTest)
 endif()
