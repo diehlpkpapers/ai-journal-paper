@@ -1,6 +1,6 @@
 ## Heat equation solver
 
-´´´´bash
+´´´bash
 python3 heat-shared.py
 Traceback (most recent call last):
   File "/Users/diehlpk/git/ai-journal-paper/python/heat-shared.py", line 79, in <module>
