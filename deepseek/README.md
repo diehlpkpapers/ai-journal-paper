@@ -23,3 +23,10 @@ Traceback:
   Traceback:
   
   1. stop(packageNotFoundError(package, lib.loc, sys.call()))
+
+# Errors in phe.m
+ Error: File: parallel_heat_equation.m Line: 33 Column: 9
+ spmd statements cannot be used inside parfor-loops. For more
+ information, see Parallel for Loops in MATLAB, "Nested spmd
+ Statements".
+ 
