@@ -16,3 +16,10 @@ Traceback:
  . }, "invalid format '%,d'; use format %f, %e, %g or %a for numeric objects", 
  .     base::quote(sprintf("Riemann sum approximation (%,d rectangles): %.12f\n", 
  .         n, approx_area)))
+
+
+# Errors in phe.r
+  Error in library(doParallel): there is no package called ‘doParallel’
+  Traceback:
+  
+  1. stop(packageNotFoundError(package, lib.loc, sys.call()))
