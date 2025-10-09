@@ -10,4 +10,4 @@
 
 ## References
 
-* [Preprint](https://arxiv.org/abs/2503.19217)
+* Diehl P, Nader N, Moraru M, Brandt SR. Llm benchmarking with llama2: Evaluating code development performance across multiple programming languages. Journal of Machine Learning for Modeling and Computing. 2025;6(3). [10.1615/JMachLearnModelComput.2025058957](https://www.dl.begellhouse.com/journals/558048804a15188a,24181d765dd9f652,0c66d667441a01b5.html) [Preprint](https://arxiv.org/abs/2503.19217)
