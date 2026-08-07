@@ -1,6 +1,5 @@
 # LLM BENCHMARKING WITH LLAMA2: EVALUATING CODE DEVELOPMENT PERFORMANCE ACROSS MULTIPLE PROGRAMMING LANGUAGES
- <a href="https://arxiv.org/abs/2503.19217"><img src="https://img.shields.io/badge/arXiv-2503.19217-b31b1b.svg?style=for-the-badge">
- [![DOI](https://zenodo.org/badge/852986173.svg)](https://doi.org/10.5281/zenodo.15832248)
+ <a href="https://arxiv.org/abs/2503.19217"><img src="https://img.shields.io/badge/arXiv-2503.19217-b31b1b.svg?style=for-the-badge"> [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15832249.svg)](https://doi.org/10.5281/zenodo.15832249)
 
 ## Content
 
